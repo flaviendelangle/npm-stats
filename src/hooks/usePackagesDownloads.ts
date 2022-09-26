@@ -2,7 +2,7 @@ import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
 import useSWR from "swr";
 import { DateRange } from "@mui/x-date-pickers-pro";
-import { Precision } from "../models";
+import { Precision, PackageOption, getPackageNameFromOption } from "../models";
 
 const API_ENDPOINT = "https://api.npmjs.org/downloads/range";
 const NPM_DATE_FORMAT = "YYYY-MM-DD";
@@ -13,7 +13,7 @@ const fetcher = (input: RequestInfo | URL, init?: RequestInit) =>
 const multiFetcher = (...urls: string[]) =>
   Promise.all(urls.map((url) => fetcher(url)));
 
-interface Response {
+interface PackageResponse {
   start: string;
   end: string;
   package: string;
@@ -22,8 +22,8 @@ interface Response {
 
 export interface UsePackagesDownloadsParams {
   dateRange: DateRange<Dayjs>;
-  packageNames: string[];
-  referencePackageName: string | null;
+  packages: (string | PackageOption)[];
+  referencePackage: string | PackageOption | null;
   precision: Precision;
 }
 
@@ -34,41 +34,85 @@ export type PackageDownloads = {
 
 export const usePackagesDownloads = ({
   dateRange,
-  packageNames,
+  packages,
+  referencePackage,
   precision,
 }: UsePackagesDownloadsParams) => {
   const endPoints = React.useMemo(() => {
-    const [startDate, endDate] = dateRange;
+    const getEndpoints = (packageOption: string | PackageOption | null) => {
+      const [startDate, endDate] = dateRange;
 
-    if (startDate == null || endDate == null) {
-      return [];
-    }
+      if (
+        packageOption == null ||
+        startDate == null ||
+        endDate == null ||
+        startDate.isAfter(endDate)
+      ) {
+        return [];
+      }
 
-    if (startDate.isAfter(endDate)) {
-      return [];
-    }
+      let packageNames: string[];
+      if (typeof packageOption === "string") {
+        packageNames = [packageOption];
+      } else {
+        packageNames = [
+          packageOption.name,
+          ...(packageOption.oldPackageNames ?? []),
+        ];
+      }
 
-    return packageNames.map(
-      (packageName) =>
-        `${API_ENDPOINT}/${startDate.format(NPM_DATE_FORMAT)}:${endDate.format(
-          NPM_DATE_FORMAT
-        )}/${packageName}`
-    );
-  }, [dateRange, packageNames]);
+      const root = `${API_ENDPOINT}/${startDate.format(
+        NPM_DATE_FORMAT
+      )}:${endDate.format(NPM_DATE_FORMAT)}`;
 
-  const { data } = useSWR<Response[]>(endPoints, multiFetcher);
+      return packageNames.map((packageName) => `${root}/${packageName}`);
+    };
+
+    return [
+      ...packages.flatMap(getEndpoints),
+      ...getEndpoints(referencePackage),
+    ];
+  }, [packages, referencePackage, dateRange]);
+
+  const packagesResponse = useSWR<PackageResponse[]>(endPoints, multiFetcher);
 
   return React.useMemo<PackageDownloads[]>(() => {
-    if (!data) {
+    if (packagesResponse.isValidating || !packagesResponse.data) {
       return [];
     }
 
-    return data
-      .map((packageResponse) => {
-        const downloadsMap = new Map<string, { time: Dayjs; value: number }>();
+    const packagesDownloadsMap: {
+      [name: string]: Map<string, { time: Dayjs; value: number }>;
+    } = {};
 
-        if (!packageResponse.downloads) {
-          return null;
+    for (const packageResponse of packagesResponse.data) {
+      if (packageResponse.downloads) {
+        const isMatchingPackage = (item: string | PackageOption) => {
+          if (typeof item === "string") {
+            return item === packageResponse.package;
+          }
+
+          return (
+            item.name === packageResponse.package ||
+            item.oldPackageNames?.includes(packageResponse.package)
+          );
+        };
+
+        let pkg = packages.find(isMatchingPackage);
+        if (!pkg && referencePackage && isMatchingPackage(referencePackage)) {
+          pkg = referencePackage;
+        }
+
+        if (!pkg) {
+          throw new Error(
+            `An unwanted package have been downloaded from NPM: ${packageResponse.package}`
+          );
+        }
+
+        const packageName = getPackageNameFromOption(pkg);
+
+        if (!packagesDownloadsMap[packageName]) {
+          packagesDownloadsMap[packageName] = new Map();
         }
 
         for (let item of packageResponse.downloads) {
@@ -90,28 +134,66 @@ export const usePackagesDownloads = ({
 
           const timeStr = date.toISOString();
 
-          if (downloadsMap.has(timeStr)) {
-            const currentEntry = downloadsMap.get(timeStr)!;
-            downloadsMap.set(timeStr, {
+          if (packagesDownloadsMap[packageName].has(timeStr)) {
+            const currentEntry =
+              packagesDownloadsMap[packageName].get(timeStr)!;
+            packagesDownloadsMap[packageName].set(timeStr, {
               ...currentEntry,
               value: currentEntry.value + item.downloads,
             });
           } else {
-            downloadsMap.set(timeStr, {
+            packagesDownloadsMap[packageName].set(timeStr, {
               time: date,
               value: item.downloads,
             });
           }
         }
+      }
+    }
+
+    const referenceDownloadsMap = referencePackage
+      ? packagesDownloadsMap[getPackageNameFromOption(referencePackage)]
+      : null;
+
+    return packages
+      .map((item) => {
+        const packageName = getPackageNameFromOption(item);
+        const downloadsMap = packagesDownloadsMap[packageName];
+
+        if (!downloadsMap) {
+          return null;
+        }
+
+        const data = Array.from(downloadsMap.entries()).map(
+          ([dateStr, item]) => {
+            const referenceItem = referenceDownloadsMap?.get(dateStr);
+            if (!referenceItem || referenceItem.value === 0) {
+              return item;
+            }
+
+            const relativeValue = item.value / referenceItem.value;
+
+            return {
+              ...item,
+              value: Math.floor(relativeValue * 100000) / 1000,
+            };
+          }
+        );
 
         return {
-          packageName: packageResponse.package,
-          data: Array.from(downloadsMap.values()),
+          packageName,
+          data,
         };
       })
       .filter(
         (packageDownloads): packageDownloads is PackageDownloads =>
           !!packageDownloads
       );
-  }, [data, precision]);
+  }, [
+    packagesResponse.data,
+    packagesResponse.isValidating,
+    referencePackage,
+    packages,
+    precision,
+  ]);
 };

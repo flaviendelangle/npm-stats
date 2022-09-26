@@ -7,18 +7,20 @@ import {
 import { HeaderBar } from "./components/HeaderBar";
 import { DownloadCharts } from "./components/DownloadCharts";
 import dayjs from "dayjs";
+import { applyPreset } from "./components/HeaderBar/HeaderBar";
 
 function App() {
   const [parameters, setParameters] =
     React.useState<UsePackagesDownloadsParams>(() => {
       const yesterday = dayjs().subtract(1, "day").startOf("day");
 
-      return {
-        packageNames: ["@mui/x-data-grid-pro", "@mui/x-data-grid-premium"],
-        referencePackageName: "@mui/material",
-        dateRange: [yesterday.subtract(1, "year"), yesterday],
-        precision: "week",
-      };
+      return applyPreset(
+        {
+          dateRange: [yesterday.subtract(1, "year"), yesterday],
+          precision: "week",
+        },
+        "MUI packages"
+      );
     });
 
   const packages = usePackagesDownloads(parameters);

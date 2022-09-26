@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Theme as NivoTheme } from "@nivo/core";
 import { useTheme } from "@mui/material/styles";
+import { OrdinalColorScaleConfig } from "@nivo/colors";
 
 interface NivoCustomization {
   theme: NivoTheme;
-  colors: string[];
+  colors: OrdinalColorScaleConfig;
 }
 
 export const useNivoCustomization = () => {
@@ -35,20 +36,9 @@ export const useNivoCustomization = () => {
       },
     };
 
-    const colors = [
-      "#ffa600",
-      "#ff7c43",
-      "#f95d6a",
-      "#d45087",
-      "#a05195",
-      "#665191",
-      "#2f4b7c",
-      "#003f5c",
-    ];
-
     return {
       theme: nivoTheme,
-      colors,
+      colors: { scheme: "dark2" },
     };
   }, [muiTheme]);
 };
