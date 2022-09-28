@@ -38,7 +38,7 @@ const DownloadCharts = ({ packages }: DownloadChartsProps) => {
           translateY: 12,
           translateX: 48,
           itemWidth: 40,
-          itemHeight: 20,
+          itemHeight: 24,
           symbolSize: 12,
           symbolShape: "circle",
         },

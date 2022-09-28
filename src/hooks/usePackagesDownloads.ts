@@ -2,7 +2,7 @@ import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
 import useSWR from "swr";
 import { DateRange } from "@mui/x-date-pickers-pro";
-import { Precision, PackageOption, getPackageNameFromOption } from "../models";
+import { Precision, PackageOption, getPackageNameFromOption } from "../data";
 
 const API_ENDPOINT = "https://api.npmjs.org/downloads/range";
 const NPM_DATE_FORMAT = "YYYY-MM-DD";
@@ -25,6 +25,7 @@ export interface UsePackagesDownloadsParams {
   packages: (string | PackageOption)[];
   referencePackage: string | PackageOption | null;
   precision: Precision;
+  base100: boolean;
 }
 
 export type PackageDownloads = {
@@ -37,6 +38,7 @@ export const usePackagesDownloads = ({
   packages,
   referencePackage,
   precision,
+  base100,
 }: UsePackagesDownloadsParams) => {
   const endPoints = React.useMemo(() => {
     const getEndpoints = (packageOption: string | PackageOption | null) => {
@@ -155,7 +157,7 @@ export const usePackagesDownloads = ({
       ? packagesDownloadsMap[getPackageNameFromOption(referencePackage)]
       : null;
 
-    return packages
+    const packagesDownloads = packages
       .map((item) => {
         const packageName = getPackageNameFromOption(item);
         const downloadsMap = packagesDownloadsMap[packageName];
@@ -189,11 +191,34 @@ export const usePackagesDownloads = ({
         (packageDownloads): packageDownloads is PackageDownloads =>
           !!packageDownloads
       );
+
+    if (!base100) {
+      return packagesDownloads;
+    }
+
+    return packagesDownloads.map((packageDownloads) => {
+      const firstValue = packageDownloads.data.find(
+        (item) => item.value > 0
+      )?.value;
+
+      if (firstValue == null) {
+        return packageDownloads;
+      }
+
+      return {
+        ...packageDownloads,
+        data: packageDownloads.data.map((item) => ({
+          ...item,
+          value: (item.value / firstValue) * 100,
+        })),
+      };
+    });
   }, [
     packagesResponse.data,
     packagesResponse.isValidating,
     referencePackage,
     packages,
     precision,
+    base100,
   ]);
 };

@@ -18,6 +18,7 @@ function App() {
         {
           dateRange: [yesterday.subtract(1, "year"), yesterday],
           precision: "week",
+          base100: false,
         },
         "MUI packages"
       );
