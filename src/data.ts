@@ -215,6 +215,11 @@ export const PACKAGES: PackageOption[] = [
     category: "eXplore competitors",
     presets: ["Free pickers"],
   },
+  {
+    name: "@material-ui/pickers",
+    category: "eXplore competitors",
+    presets: ["Free pickers"],
+  },
 
   // Others
   { name: "react-dom", category: "Others" },
