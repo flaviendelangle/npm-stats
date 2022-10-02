@@ -1,46 +1,46 @@
 import React from "react";
-import Box from "@mui/material/Box";
-import {
-  usePackagesDownloads,
-  UsePackagesDownloadsParams,
-} from "./hooks/usePackagesDownloads";
-import { HeaderBar } from "./components/HeaderBar";
-import { DownloadCharts } from "./components/DownloadCharts";
-import dayjs from "dayjs";
-import { applyPreset } from "./components/HeaderBar/HeaderBar";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
+import GlobalStyles from "@mui/material/GlobalStyles";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import CssBaseline from "@mui/material/CssBaseline";
+import { theme } from "./theme";
+import { PackagesDownloads } from "./pages/PackagesDownloads";
+import { PackageVersions } from "./pages/PackageVersions";
+import { NPMContext } from "./components/NPMContext";
 
-function App() {
-  const [parameters, setParameters] =
-    React.useState<UsePackagesDownloadsParams>(() => {
-      const yesterday = dayjs().subtract(1, "day").startOf("day");
+const customCssBaseline = (
+  <GlobalStyles
+    styles={{
+      body: { width: "100vw", height: "100vh" },
+      "& #root": { width: "100vw", height: "100vh" },
+    }}
+  />
+);
 
-      return applyPreset(
-        {
-          dateRange: [yesterday.subtract(1, "year"), yesterday],
-          precision: "week",
-          base100: false,
-        },
-        "MUI packages"
-      );
-    });
-
-  const packages = usePackagesDownloads(parameters);
-
+export const App = () => {
   return (
-    <Box
-      sx={{
-        height: "100%",
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <HeaderBar value={parameters} onChange={setParameters} />
-      <Box sx={{ p: 2, flex: "1 1 100%", overflow: "hidden" }}>
-        <DownloadCharts packages={packages} />
-      </Box>
-    </Box>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {customCssBaseline}
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <NPMContext>
+            <Routes>
+              <Route
+                path="/packages-downloads"
+                element={<PackagesDownloads />}
+              />
+              <Route path="/package-versions" element={<PackageVersions />} />
+              <Route
+                path="*"
+                element={<Navigate to="/packages-downloads" replace />}
+              />
+            </Routes>
+          </NPMContext>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
-}
-
-export default App;
+};

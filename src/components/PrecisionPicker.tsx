@@ -3,12 +3,14 @@ import ToggleButtonGroup, {
 } from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import React from "react";
-import { HeaderBarProps } from "./HeaderBar.types";
-import { Precision } from "../../data";
+import { Precision } from "../data";
+import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
 
 interface PrecisionPickerProps
-  extends HeaderBarProps,
-    Pick<ToggleButtonGroupProps, "size" | "fullWidth"> {}
+  extends Pick<ToggleButtonGroupProps, "size" | "fullWidth"> {
+  value: UsePackagesDownloadsParams;
+  onChange: React.Dispatch<React.SetStateAction<UsePackagesDownloadsParams>>;
+}
 
 export const PrecisionPicker = (props: PrecisionPickerProps) => {
   const { onChange, value, size, fullWidth } = props;

@@ -13,12 +13,17 @@ import TextField from "@mui/material/TextField";
 import Fade from "@mui/material/Fade";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { HeaderBarProps } from "./HeaderBar.types";
-import { getPackageNameFromOption, PackageOption, PACKAGES } from "../../data";
+import { getPackageNameFromOption, PackageOption, PACKAGES } from "../data";
 import { DateRangePicker } from "./DateRangePicker";
 import { PrecisionPicker } from "./PrecisionPicker";
+import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
 
-export const ParamsModal = (props: HeaderBarProps) => {
+export interface ParamsModalProps {
+  value: UsePackagesDownloadsParams;
+  onChange: React.Dispatch<React.SetStateAction<UsePackagesDownloadsParams>>;
+}
+
+export const ParamsModal = (props: ParamsModalProps) => {
   const { onChange, value } = props;
 
   const [open, setOpen] = React.useState(false);

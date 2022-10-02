@@ -3,11 +3,12 @@ import { Dayjs } from "dayjs";
 import { DateRange } from "@mui/x-date-pickers-pro";
 import { Unstable_SingleInputDateRangeField as SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
 import { TextFieldProps } from "@mui/material";
-import { HeaderBarProps } from "./HeaderBar.types";
+import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
 
-interface DateRangePickerProps
-  extends HeaderBarProps,
-    Pick<TextFieldProps, "sx" | "size"> {}
+interface DateRangePickerProps extends Pick<TextFieldProps, "sx" | "size"> {
+  value: UsePackagesDownloadsParams;
+  onChange: React.Dispatch<React.SetStateAction<UsePackagesDownloadsParams>>;
+}
 
 export const DateRangePicker = (props: DateRangePickerProps) => {
   const { onChange, value, sx, size } = props;

@@ -2,16 +2,7 @@ import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { DateRange } from "@mui/x-date-pickers-pro";
 import { Precision, PackageOption, getPackageNameFromOption } from "../data";
-
-const API_ENDPOINT = "https://api.npmjs.org/downloads/range";
-const NPM_DATE_FORMAT = "YYYY-MM-DD";
-
-interface PackageResponse {
-  start: string;
-  end: string;
-  package: string;
-  downloads: { downloads: number; day: string }[];
-}
+import { useNpmApi, NPM_DATE_FORMAT } from "../components/NPMContext";
 
 export interface UsePackagesDownloadsParams {
   dateRange: DateRange<Dayjs>;
@@ -26,134 +17,28 @@ export type PackageDownloads = {
   data: { time: Dayjs; value: number }[];
 };
 
-export const usePackagesDownloads = ({
-  dateRange,
-  packages,
-  referencePackage,
-  precision,
-  base100,
-}: UsePackagesDownloadsParams) => {
-  const [state, setState] = React.useState<{
-    responses: { [endpoint: string]: PackageResponse };
-    packages: { [npmPackage: string]: PackageResponse };
-    isLoading: boolean;
-  }>({ responses: {}, packages: {}, isLoading: true });
-  const stateRef = React.useRef(state);
+export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
+  const npmApi = useNpmApi();
 
   React.useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
+    const fetcher = npmApi.fetchPackagesDownloads;
 
-  React.useEffect(() => {
-    const fetchNpmPackageDownloads = async (
-      npmPackage: string,
-      [startDate, endDate]: [Dayjs, Dayjs]
-    ): Promise<{
-      aggregatedResponse: PackageResponse | null;
-      responses: { [endpoint: string]: PackageResponse };
-    }> => {
-      const endpoint = `${API_ENDPOINT}/${startDate.format(
-        NPM_DATE_FORMAT
-      )}:${endDate.format(NPM_DATE_FORMAT)}/${npmPackage}`;
-
-      let data: PackageResponse;
-
-      if (stateRef.current.responses[endpoint]) {
-        data = stateRef.current.responses[endpoint];
-      } else {
-        const response = await window.fetch(endpoint);
-        data = await response.json();
-      }
-
-      if (!data.downloads) {
-        return {
-          aggregatedResponse: null,
-          responses: {
-            [endpoint]: data,
-          },
-        };
-      }
-
-      const responseStart = dayjs(data.start, NPM_DATE_FORMAT);
-      if (responseStart.isAfter(startDate)) {
-        const nextPages = await fetchNpmPackageDownloads(npmPackage, [
-          startDate,
-          responseStart.subtract(1, "day"),
-        ]);
-        if (nextPages.aggregatedResponse) {
-          return {
-            aggregatedResponse: {
-              ...data,
-              downloads: [
-                ...nextPages.aggregatedResponse.downloads,
-                ...data.downloads,
-              ],
-            },
-            responses: {
-              ...nextPages.responses,
-              [endpoint]: data,
-            },
-          };
-        }
-      }
-
-      return {
-        aggregatedResponse: data,
-        responses: {
-          [endpoint]: data,
-        },
-      };
-    };
-
-    const fetcher = async () => {
-      const [startDate, endDate] = dateRange;
-      if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
-        setState((prev) => ({ ...prev, isLoading: false }));
-        return;
-      }
-
-      setState((prev) => ({ ...prev, isLoading: true }));
-
-      const npmPackages = [];
-      for (const pkg of packages) {
-        if (typeof pkg === "string") {
-          npmPackages.push(pkg);
-        } else {
-          npmPackages.push(pkg.name);
-          if (pkg.oldPackageNames) {
-            npmPackages.push(...pkg.oldPackageNames);
-          }
-        }
-      }
-
-      await Promise.all(
-        npmPackages.map(async (npmPackage) => {
-          const packageResponses = await fetchNpmPackageDownloads(npmPackage, [
-            startDate,
-            endDate,
-          ]);
-          setState((prev) => ({
-            ...prev,
-            responses: { ...prev.responses, ...packageResponses.responses },
-            packages:
-              packageResponses.aggregatedResponse != null
-                ? {
-                    ...prev.packages,
-                    [npmPackage]: packageResponses.aggregatedResponse,
-                  }
-                : prev.packages,
-          }));
-        })
-      );
-
-      setState((prev) => ({ ...prev, isLoading: false }));
-    };
-
-    fetcher();
-  }, [packages, referencePackage, dateRange]);
+    fetcher({
+      dateRange: params.dateRange,
+      packages:
+        params.referencePackage == null
+          ? params.packages
+          : [...params.packages, params.referencePackage],
+    });
+  }, [
+    params.packages,
+    params.referencePackage,
+    params.dateRange,
+    npmApi.fetchPackagesDownloads,
+  ]);
 
   return React.useMemo<PackageDownloads[]>(() => {
-    if (state.isLoading || !state.packages) {
+    if (npmApi.isLoading || !npmApi.packages) {
       return [];
     }
 
@@ -168,14 +53,12 @@ export const usePackagesDownloads = ({
           ? [pkg]
           : [pkg.name, ...(pkg.oldPackageNames ?? [])];
 
-      console.log(npmPackages);
-
       if (packagesDownloadsMap[packageName]) {
         return;
       }
 
       for (const npmPackage of npmPackages) {
-        const npmPackageResponse = state.packages[npmPackage];
+        const npmPackageResponse = npmApi.packages[npmPackage];
         if (npmPackageResponse?.downloads) {
           if (!packagesDownloadsMap[packageName]) {
             packagesDownloadsMap[packageName] = new Map();
@@ -183,7 +66,7 @@ export const usePackagesDownloads = ({
 
           for (let item of npmPackageResponse.downloads) {
             let date: Dayjs;
-            switch (precision) {
+            switch (params.precision) {
               case "day": {
                 date = dayjs(item.day, NPM_DATE_FORMAT).startOf("day");
                 break;
@@ -218,19 +101,19 @@ export const usePackagesDownloads = ({
       }
     };
 
-    for (const pkg of packages) {
+    for (const pkg of params.packages) {
       buildPackageMap(pkg);
     }
 
-    if (referencePackage != null) {
-      buildPackageMap(referencePackage);
+    if (params.referencePackage != null) {
+      buildPackageMap(params.referencePackage);
     }
 
-    const referenceDownloadsMap = referencePackage
-      ? packagesDownloadsMap[getPackageNameFromOption(referencePackage)]
+    const referenceDownloadsMap = params.referencePackage
+      ? packagesDownloadsMap[getPackageNameFromOption(params.referencePackage)]
       : null;
 
-    const packagesDownloads = packages
+    const packagesDownloads = params.packages
       .map((item) => {
         const packageName = getPackageNameFromOption(item);
         const downloadsMap = packagesDownloadsMap[packageName];
@@ -265,7 +148,7 @@ export const usePackagesDownloads = ({
           !!packageDownloads
       );
 
-    if (!base100) {
+    if (!params.base100) {
       return packagesDownloads;
     }
 
@@ -287,11 +170,11 @@ export const usePackagesDownloads = ({
       };
     });
   }, [
-    state.packages,
-    state.isLoading,
-    referencePackage,
-    packages,
-    precision,
-    base100,
+    npmApi.packages,
+    npmApi.isLoading,
+    params.referencePackage,
+    params.packages,
+    params.precision,
+    params.base100,
   ]);
 };

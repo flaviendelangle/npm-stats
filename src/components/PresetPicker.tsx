@@ -1,12 +1,24 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
-import { PackagePreset, PRESETS } from "../../data";
+import { PackagePreset, PACKAGES, PRESETS } from "../data";
 import MenuItem from "@mui/material/MenuItem";
-import { applyPreset } from "./HeaderBar";
-import { HeaderBarProps } from "./HeaderBar.types";
+import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
 
-export const PresetPicker = ({ onChange, value }: HeaderBarProps) => {
+interface PresetPickerProps {
+  onChange: React.Dispatch<React.SetStateAction<UsePackagesDownloadsParams>>;
+}
+
+export const applyPreset = (
+  value: Omit<UsePackagesDownloadsParams, "packages" | "referencePackage">,
+  preset: PackagePreset
+): UsePackagesDownloadsParams => ({
+  ...value,
+  packages: PACKAGES.filter((item) => item?.presets?.includes(preset)),
+  referencePackage: "react-dom",
+});
+
+export const PresetPicker = ({ onChange }: PresetPickerProps) => {
   const [presetMenuAnchorEl, setPresetMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const isPresetMenuOpen = !!presetMenuAnchorEl;
