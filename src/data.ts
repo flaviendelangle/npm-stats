@@ -220,6 +220,11 @@ export const PACKAGES: PackageOption[] = [
     category: "eXplore competitors",
     presets: ["Free pickers"],
   },
+  {
+    name: "react-datepicker",
+    category: "eXplore competitors",
+    presets: ["Free pickers"],
+  },
 
   // Others
   { name: "react-dom", category: "Others" },

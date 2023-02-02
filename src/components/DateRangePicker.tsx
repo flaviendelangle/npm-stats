@@ -3,23 +3,21 @@ import { Dayjs } from "dayjs";
 import { DateRange } from "@mui/x-date-pickers-pro";
 import { Unstable_SingleInputDateRangeField as SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
 import { TextFieldProps } from "@mui/material";
-import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
 
 interface DateRangePickerProps extends Pick<TextFieldProps, "sx" | "size"> {
-  value: UsePackagesDownloadsParams;
-  onChange: React.Dispatch<React.SetStateAction<UsePackagesDownloadsParams>>;
+  value: DateRange<Dayjs>;
+  onChange: (newValue: DateRange<Dayjs>) => void;
+  format?: string;
 }
 
 export const DateRangePicker = (props: DateRangePickerProps) => {
-  const { onChange, value, sx, size } = props;
+  const { onChange, value, sx, size, format } = props;
 
-  const [localeValue, setLocaleValue] = React.useState<DateRange<Dayjs>>(
-    value.dateRange
-  );
+  const [localeValue, setLocaleValue] = React.useState<DateRange<Dayjs>>(value);
 
   React.useEffect(() => {
-    setLocaleValue(value.dateRange);
-  }, [value.dateRange]);
+    setLocaleValue(value);
+  }, [value]);
 
   const isInitialRender = React.useRef(true);
   React.useEffect(() => {
@@ -29,7 +27,7 @@ export const DateRangePicker = (props: DateRangePickerProps) => {
     }
 
     const t = window.setTimeout(() => {
-      onChange((prev) => ({ ...prev, dateRange: localeValue }));
+      onChange(localeValue);
     }, 1000);
 
     return () => {
@@ -40,10 +38,11 @@ export const DateRangePicker = (props: DateRangePickerProps) => {
   return (
     <SingleInputDateRangeField
       label="Date range"
-      value={localeValue as any}
+      value={localeValue}
       onChange={setLocaleValue}
       sx={sx}
       size={size}
+      format={format}
     />
   );
 };
