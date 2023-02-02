@@ -11,7 +11,7 @@ export const PRESETS = [
   "Paying pickers",
 ] as const;
 
-export type PackagePreset = typeof PRESETS[number];
+export type PackagePreset = (typeof PRESETS)[number];
 
 export type PackageCategory =
   | "MUI Core"

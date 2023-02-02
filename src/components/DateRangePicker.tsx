@@ -1,7 +1,7 @@
 import React from "react";
 import { Dayjs } from "dayjs";
 import { DateRange } from "@mui/x-date-pickers-pro";
-import { Unstable_SingleInputDateRangeField as SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
 import { TextFieldProps } from "@mui/material";
 
 interface DateRangePickerProps extends Pick<TextFieldProps, "sx" | "size"> {
