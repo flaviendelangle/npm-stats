@@ -126,8 +126,8 @@ export const NPMContext = ({ children }: { children: React.ReactNode }) => {
           npmPackages.push(pkg);
         } else {
           npmPackages.push(pkg.name);
-          if (pkg.oldPackageNames) {
-            npmPackages.push(...pkg.oldPackageNames);
+          if (pkg.packageNames) {
+            npmPackages.push(...pkg.packageNames);
           }
         }
       }

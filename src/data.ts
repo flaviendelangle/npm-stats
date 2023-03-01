@@ -25,7 +25,10 @@ export interface PackageOption {
   name: string;
   category: PackageCategory;
   presets?: PackagePreset[];
-  oldPackageNames?: string[];
+  /**
+   * @default [name]
+   */
+  packageNames?: string[];
 }
 
 export const getPackageNameFromOption = (option: PackageOption | string) =>
@@ -37,7 +40,7 @@ export const PACKAGES: PackageOption[] = [
     name: "@mui/material",
     category: "MUI Core",
     presets: ["MUI packages", "MUI free packages"],
-    oldPackageNames: ["@material-ui/core"],
+    packageNames: ["@mui/material", "@material-ui/core"],
   },
   {
     name: "@mui/base",
@@ -53,7 +56,7 @@ export const PACKAGES: PackageOption[] = [
     name: "@mui/lab",
     category: "MUI Core",
     presets: ["MUI packages", "MUI free packages"],
-    oldPackageNames: ["@material-ui/lab"],
+    packageNames: ["@mui/lab", "@material-ui/lab"],
   },
 
   // MUI XGrid
@@ -66,7 +69,7 @@ export const PACKAGES: PackageOption[] = [
       "MUI packages",
       "MUI free packages",
     ],
-    oldPackageNames: ["@material-ui/data-grid"],
+    packageNames: ["@mui/x-data-grid", "@material-ui/data-grid"],
   },
   {
     name: "@mui/x-data-grid-pro",
@@ -77,7 +80,7 @@ export const PACKAGES: PackageOption[] = [
       "MUI packages",
       "MUI paying packages",
     ],
-    oldPackageNames: ["@material-ui/x-grid"],
+    packageNames: ["@mui/x-data-grid-pro", "@material-ui/x-grid"],
   },
   {
     name: "@mui/x-data-grid-premium",
@@ -228,4 +231,11 @@ export const PACKAGES: PackageOption[] = [
 
   // Others
   { name: "react-dom", category: "Others" },
+
+  // Summed packages
+  {
+    name: "MUI-based pickers",
+    category: "Others",
+    packageNames: ["@mui/x-date-pickers", "@material-ui/pickers"],
+  },
 ];
