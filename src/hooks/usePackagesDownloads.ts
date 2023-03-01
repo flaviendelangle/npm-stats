@@ -49,13 +49,13 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
     const buildPackageMap = (pkg: string | PackageOption) => {
       const packageName = getPackageNameFromOption(pkg);
 
-      let npmPackages: string[]
-      if (typeof pkg === 'string') {
-        npmPackages = [pkg]
+      let npmPackages: string[];
+      if (typeof pkg === "string") {
+        npmPackages = [pkg];
       } else if (pkg.packageNames == null) {
-        npmPackages = [pkg.name]
+        npmPackages = [pkg.name];
       } else {
-        npmPackages = pkg.packageNames
+        npmPackages = pkg.packageNames;
       }
 
       if (packagesDownloadsMap[packageName]) {
@@ -64,8 +64,6 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
 
       for (const npmPackage of npmPackages) {
         const npmPackageResponse = npmApi.packages[npmPackage];
-
-        console.log(npmPackageResponse)
         if (npmPackageResponse?.downloads) {
           if (!packagesDownloadsMap[packageName]) {
             packagesDownloadsMap[packageName] = new Map();

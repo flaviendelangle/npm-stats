@@ -25,10 +25,6 @@ interface NPMContextValue
     dateRange: DateRange<Dayjs>;
     packages: (string | PackageOption)[];
   }) => Promise<void>;
-  fetchPackageVersions: (params: {
-    dateRange: DateRange<Dayjs>;
-    package: string | PackageOption;
-  }) => Promise<void>;
 }
 
 const Context = React.createContext<NPMContextValue>({} as NPMContextValue);
@@ -157,62 +153,13 @@ export const NPMContext = ({ children }: { children: React.ReactNode }) => {
     [fetchNpmPackageDownloads]
   );
 
-  const fetchPackageMonthVersion = React.useCallback(
-    async (npmPackage: string, [startDate, endDate]: [Dayjs, Dayjs]) => {
-      const startDateStr = startDate.format(NPM_DATE_FORMAT);
-      const endDateStr = endDate.format(NPM_DATE_FORMAT);
-      const endpoint = `${API_ENDPOINT}/versions/${startDateStr}:${endDateStr}/${npmPackage}`;
-
-      const response = await window.fetch(endpoint);
-      const data = await response.json();
-      console.log(data);
-    },
-    []
-  );
-
-  const fetchPackageVersions = React.useCallback<
-    NPMContextValue["fetchPackageVersions"]
-  >(
-    async ({ dateRange }) => {
-      const [startDate, endDate] = dateRange;
-
-      if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
-        setState((prev) => ({ ...prev, isLoading: false }));
-        return;
-      }
-
-      const promises: any[] = [];
-      let startOfRequest: Dayjs = startDate;
-      while (startOfRequest.isBefore(endDate)) {
-        const endOfRequest = startOfRequest.add(1, "month").subtract(1, "day");
-        const npmPackage = "@mui%2Fx-data-grid";
-
-        promises.push(
-          fetchPackageMonthVersion(npmPackage, [
-            startOfRequest,
-            endOfRequest,
-          ] as [Dayjs, Dayjs])
-        );
-
-        startOfRequest = startOfRequest.add(1, "month");
-      }
-    },
-    [fetchPackageMonthVersion]
-  );
-
   const context = React.useMemo(
     () => ({
       isLoading: state.isLoading,
       packages: state.packages,
       fetchPackagesDownloads,
-      fetchPackageVersions,
     }),
-    [
-      state.isLoading,
-      state.packages,
-      fetchPackagesDownloads,
-      fetchPackageVersions,
-    ]
+    [state.isLoading, state.packages, fetchPackagesDownloads]
   );
 
   return <Context.Provider value={context}>{children}</Context.Provider>;

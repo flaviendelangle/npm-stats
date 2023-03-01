@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ResponsiveLine, Serie } from "@nivo/line";
-import { useNivoCustomization } from "../../hooks/useNivoCustomization";
+import ReactECharts from "echarts-for-react";
+import { useEchartsTheme } from "../../hooks/useEchartsTheme";
 import { PackageDownloads } from "../../hooks/usePackagesDownloads";
 
 interface DownloadChartsProps {
@@ -8,48 +8,51 @@ interface DownloadChartsProps {
 }
 
 const DownloadCharts = ({ packages }: DownloadChartsProps) => {
-  const nivoCustomization = useNivoCustomization();
+  const addTheme = useEchartsTheme();
 
-  const data = React.useMemo<Serie[]>(
-    () =>
-      packages.map((npmPackage) => ({
-        id: npmPackage.packageName,
-        data: npmPackage.data.map((item) => ({
-          x: item.time.format("YYYY-MM-DD"),
-          y: item.value,
-        })),
-      })),
-    [packages]
-  );
+  const series = React.useMemo(() => {
+    if (false) {
+      return packages
+        .map((npmPackage) => ({
+          name: npmPackage.packageName,
+          type: "bar",
+          data: npmPackage.data.slice(1).map((item, itemIndex) => {
+            const growth = item.value / npmPackage.data[itemIndex].value - 1;
+            return [item.time.toDate(), growth] as const;
+          }),
+        }))
+        .sort(
+          (a, b) => b.data[b.data.length - 1][1] - a.data[a.data.length - 1][1]
+        );
+    }
+
+    return packages
+      .map((npmPackage) => ({
+        name: npmPackage.packageName,
+        type: "line",
+        showSymbol: false,
+        data: npmPackage.data.map(
+          (item) => [item.time.toDate(), item.value] as const
+        ),
+      }))
+      .sort(
+        (a, b) => b.data[b.data.length - 1][1] - a.data[a.data.length - 1][1]
+      );
+  }, [packages]);
 
   return (
-    <ResponsiveLine
-      data={data}
-      margin={{ top: 0, right: 100, bottom: 48, left: 72 }}
-      enableGridX={false}
-      pointSize={0}
-      enableSlices="x"
-      pointLabelYOffset={0}
-      yFormat={(value) => value.toLocaleString()}
-      legends={[
-        {
-          anchor: "top-left",
-          direction: "column",
-          translateY: 12,
-          translateX: 48,
-          itemWidth: 40,
-          itemHeight: 24,
-          symbolSize: 12,
-          symbolShape: "circle",
+    <ReactECharts
+      key={Math.random()}
+      style={{ height: "100%", width: "100%" }}
+      option={addTheme({
+        series,
+        grid: { top: 0, right: 100, bottom: 48, left: 72 },
+        tooltip: {
+          trigger: "axis",
         },
-      ]}
-      axisLeft={{
-        legend: "Downloads",
-        legendPosition: "middle",
-        legendOffset: -56,
-        format: (value) => value.toLocaleString(),
-      }}
-      {...nivoCustomization}
+        xAxis: { type: "time" },
+        yAxis: { type: "value" },
+      })}
     />
   );
 };
