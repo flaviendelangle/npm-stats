@@ -114,6 +114,11 @@ export const PACKAGES: PackageOption[] = [
       "MUI paying packages",
     ],
   },
+  {
+    name: "@mui/x-charts",
+    category: "MUI eXplore",
+    presets: ["MUI X packages", "MUI packages", "MUI free packages"],
+  },
 
   // XGrid competitors
   {
