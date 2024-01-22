@@ -1,5 +1,12 @@
 export type Precision = "day" | "week" | "month";
 
+export type DateRange =
+  | "last-five-years"
+  | "last-two-years"
+  | "last-year"
+  | "last-six-months"
+  | "last-month";
+
 export const PRESETS = [
   "MUI packages",
   "MUI X packages",
@@ -116,6 +123,11 @@ export const PACKAGES: PackageOption[] = [
   },
   {
     name: "@mui/x-charts",
+    category: "MUI eXplore",
+    presets: ["MUI X packages", "MUI packages", "MUI free packages"],
+  },
+  {
+    name: "@mui/x-tree-view",
     category: "MUI eXplore",
     presets: ["MUI X packages", "MUI packages", "MUI free packages"],
   },

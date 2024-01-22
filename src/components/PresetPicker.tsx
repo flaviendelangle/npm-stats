@@ -15,7 +15,7 @@ export const applyPreset = (
 ): UsePackagesDownloadsParams => ({
   ...value,
   packages: PACKAGES.filter((item) => item?.presets?.includes(preset)),
-  referencePackage: "react-dom",
+  referencePackage: null,
 });
 
 export const PresetPicker = ({ onChange }: PresetPickerProps) => {

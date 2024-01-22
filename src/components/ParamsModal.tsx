@@ -86,12 +86,7 @@ export const ParamsModal = (props: ParamsModalProps) => {
         </DialogTitle>
         <DialogContent>
           <Stack spacing={4} sx={{ position: "relative", py: 1 }}>
-            <DateRangePicker
-              value={value.dateRange}
-              onChange={(newValue) =>
-                setValue((prev) => ({ ...prev, dateRange: newValue }))
-              }
-            />
+            <DateRangePicker value={value} onChange={setValue} fullWidth />
             <PrecisionPicker value={value} onChange={setValue} fullWidth />
             <Autocomplete<PackageOption, true, false, true>
               freeSolo

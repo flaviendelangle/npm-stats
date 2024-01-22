@@ -1,5 +1,4 @@
 import React from "react";
-import dayjs from "dayjs";
 import {
   usePackagesDownloads,
   UsePackagesDownloadsParams,
@@ -8,21 +7,36 @@ import { DownloadCharts } from "../../components/DownloadCharts";
 import { applyPreset } from "../../components/PresetPicker";
 import { Page } from "../../components/Page";
 import { Parameters } from "./Parameters";
+import queryString from "query-string";
+import { Precision } from "../../data";
 
 export const PackagesDownloads = () => {
   const [parameters, setParameters] =
     React.useState<UsePackagesDownloadsParams>(() => {
-      const yesterday = dayjs().subtract(1, "day").startOf("day");
+      const queryParams = queryString.parse(document.location.search);
 
       return applyPreset(
         {
-          dateRange: [yesterday.subtract(1, "year"), yesterday],
-          precision: "week",
-          base100: false,
+          precision: (queryParams.precision as Precision) ?? "week",
+          base100: queryParams.base100 === "true",
+          dateRange: "last-year",
         },
-        "MUI packages"
+        "MUI X packages"
       );
     });
+
+  React.useEffect(() => {
+    const queryParams = {
+      ...queryString.parse(document.location.search),
+      ...parameters,
+    };
+
+    window.history.replaceState(
+      null,
+      "",
+      `?${queryString.stringify(queryParams)}`
+    );
+  }, [parameters]);
 
   const packages = usePackagesDownloads(parameters);
 

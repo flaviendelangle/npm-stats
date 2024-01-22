@@ -1,8 +1,8 @@
+import React from "react";
 import ToggleButtonGroup, {
   ToggleButtonGroupProps,
 } from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
-import React from "react";
 import { Precision } from "../data";
 import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
 

@@ -1,48 +1,47 @@
 import React from "react";
-import { Dayjs } from "dayjs";
-import { DateRange } from "@mui/x-date-pickers-pro";
-import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
-import { TextFieldProps } from "@mui/material";
+import ToggleButtonGroup, {
+  ToggleButtonGroupProps,
+} from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
+import { DateRange } from "../data";
 
-interface DateRangePickerProps extends Pick<TextFieldProps, "sx" | "size"> {
-  value: DateRange<Dayjs>;
-  onChange: (newValue: DateRange<Dayjs>) => void;
-  format?: string;
+interface PrecisionPickerProps
+  extends Pick<ToggleButtonGroupProps, "size" | "fullWidth"> {
+  value: UsePackagesDownloadsParams;
+  onChange: React.Dispatch<React.SetStateAction<UsePackagesDownloadsParams>>;
 }
 
-export const DateRangePicker = (props: DateRangePickerProps) => {
-  const { onChange, value, sx, size, format } = props;
+export const DateRangePicker = (props: PrecisionPickerProps) => {
+  const { onChange, value, size, fullWidth } = props;
 
-  const [localeValue, setLocaleValue] = React.useState<DateRange<Dayjs>>(value);
-
-  React.useEffect(() => {
-    setLocaleValue(value);
-  }, [value]);
-
-  const isInitialRender = React.useRef(true);
-  React.useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
+  const handleDateRangeChange = (
+    event: React.MouseEvent,
+    dateRange: DateRange
+  ) => {
+    if (!dateRange) {
       return;
     }
 
-    const t = window.setTimeout(() => {
-      onChange(localeValue);
-    }, 1000);
-
-    return () => {
-      window.clearTimeout(t);
-    };
-  }, [localeValue]); // eslint-disable-line react-hooks/exhaustive-deps
+    onChange((prev) => ({
+      ...prev,
+      dateRange,
+    }));
+  };
 
   return (
-    <SingleInputDateRangeField
-      label="Date range"
-      value={localeValue}
-      onChange={setLocaleValue}
-      sx={sx}
+    <ToggleButtonGroup
+      exclusive
       size={size}
-      format={format}
-    />
+      fullWidth={fullWidth}
+      value={value.dateRange}
+      onChange={handleDateRangeChange}
+    >
+      <ToggleButton value="last-five-years">5 years</ToggleButton>
+      <ToggleButton value="last-two-years">2 years</ToggleButton>
+      <ToggleButton value="last-year">1 year</ToggleButton>
+      <ToggleButton value="last-six-months">6 months</ToggleButton>
+      <ToggleButton value="last-month">1 month</ToggleButton>
+    </ToggleButtonGroup>
   );
 };

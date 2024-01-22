@@ -12,18 +12,9 @@ export interface ParametersProps {
 }
 
 export const Parameters = (props: ParametersProps) => {
-  const { value, onChange } = props;
-
   return (
     <Stack spacing={2} direction="row">
-      <DateRangePicker
-        value={value.dateRange}
-        onChange={(newValue) =>
-          onChange((prev) => ({ ...prev, dateRange: newValue }))
-        }
-        size="small"
-        sx={{ minWidth: 300 }}
-      />
+      <DateRangePicker {...props} size="small" />
       <PrecisionPicker {...props} size="small" />
       <PresetPicker {...props} />
       <ParamsModal {...props} />

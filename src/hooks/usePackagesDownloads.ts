@@ -1,11 +1,15 @@
 import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { DateRange } from "@mui/x-date-pickers-pro";
-import { Precision, PackageOption, getPackageNameFromOption } from "../data";
+import {
+  Precision,
+  PackageOption,
+  getPackageNameFromOption,
+  DateRange,
+} from "../data";
 import { useNpmApi, NPM_DATE_FORMAT } from "../components/NPMContext";
 
 export interface UsePackagesDownloadsParams {
-  dateRange: DateRange<Dayjs>;
+  dateRange: DateRange;
   packages: (string | PackageOption)[];
   referencePackage: string | PackageOption | null;
   precision: Precision;

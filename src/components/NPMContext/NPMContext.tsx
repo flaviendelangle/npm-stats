@@ -1,7 +1,6 @@
 import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { DateRange } from "@mui/x-date-pickers-pro";
-import { PackageOption } from "../../data";
+import { DateRange, PackageOption } from "../../data";
 
 const API_ENDPOINT = "https://api.npmjs.org/downloads";
 export const NPM_DATE_FORMAT = "YYYY-MM-DD";
@@ -22,7 +21,7 @@ interface NPMContextState {
 interface NPMContextValue
   extends Pick<NPMContextState, "packages" | "isLoading"> {
   fetchPackagesDownloads: (params: {
-    dateRange: DateRange<Dayjs>;
+    dateRange: DateRange;
     packages: (string | PackageOption)[];
   }) => Promise<void>;
 }
@@ -108,7 +107,31 @@ export const NPMContext = ({ children }: { children: React.ReactNode }) => {
     NPMContextValue["fetchPackagesDownloads"]
   >(
     async ({ dateRange, packages }) => {
-      const [startDate, endDate] = dateRange;
+      const endDate = dayjs().subtract(1, "day").startOf("day");
+      let startDate: dayjs.Dayjs;
+      switch (dateRange) {
+        case "last-five-years": {
+          startDate = endDate.subtract(5, "year");
+          break;
+        }
+        case "last-two-years": {
+          startDate = endDate.subtract(2, "year");
+          break;
+        }
+        case "last-year": {
+          startDate = endDate.subtract(1, "year");
+          break;
+        }
+        case "last-six-months": {
+          startDate = endDate.subtract(6, "month");
+          break;
+        }
+        case "last-month": {
+          startDate = endDate.subtract(1, "month");
+          break;
+        }
+      }
+
       if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
         setState((prev) => ({ ...prev, isLoading: false }));
         return;
