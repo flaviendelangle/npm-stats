@@ -155,10 +155,19 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
               }
 
               const timeStr = date.toISOString();
-              packagesDownloadsMap[packageName].set(timeStr, {
-                time: date,
-                value,
-              });
+              if (packagesDownloadsMap[packageName].has(timeStr)) {
+                const currentEntry =
+                  packagesDownloadsMap[packageName].get(timeStr)!;
+                packagesDownloadsMap[packageName].set(timeStr, {
+                  ...currentEntry,
+                  value: currentEntry.value + value,
+                });
+              } else {
+                packagesDownloadsMap[packageName].set(timeStr, {
+                  time: date,
+                  value,
+                });
+              }
             }
           }
         }

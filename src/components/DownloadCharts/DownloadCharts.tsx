@@ -67,11 +67,12 @@ const DownloadCharts = ({ packages, parameters }: DownloadChartsProps) => {
         },
       },
     ];
-  }, [packages, parameters.precision]);
+  }, [packages, parameters.precision, parameters.precisionModel]);
 
   return (
     <LineChart
       xAxis={xAxis}
+      yAxis={[{ min: 0 }]}
       series={series}
       grid={{ horizontal: true }}
       skipAnimation
