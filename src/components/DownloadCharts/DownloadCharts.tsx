@@ -51,6 +51,10 @@ const DownloadCharts = ({ packages, parameters }: DownloadChartsProps) => {
         scaleType: "time",
         data: packages[0].data.map((item) => item.time.toDate()),
         valueFormatter: (date: Date) => {
+          if (parameters.precisionModel === "movingAverage") {
+            return dayjs(date).format("DD/MM/YYYY");
+          }
+
           if (parameters.precision === "month") {
             return dayjs(date).format("MMMM YYYY");
           }

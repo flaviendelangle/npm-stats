@@ -5,6 +5,7 @@ import {
   PackageOption,
   getPackageNameFromOption,
   DateRange,
+  PrecisionModel,
 } from "../data";
 import { useNpmApi, NPM_DATE_FORMAT } from "../components/NPMContext";
 
@@ -13,6 +14,7 @@ export interface UsePackagesDownloadsParams {
   packages: (string | PackageOption)[];
   referencePackage: string | PackageOption | null;
   precision: Precision;
+  precisionModel: PrecisionModel;
   base100: boolean;
 }
 
@@ -73,36 +75,89 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
             packagesDownloadsMap[packageName] = new Map();
           }
 
-          for (let item of npmPackageResponse.downloads) {
-            let date: Dayjs;
+          if (params.precisionModel === "sum") {
+            for (let item of npmPackageResponse.downloads) {
+              let date: Dayjs;
+              switch (params.precision) {
+                case "day": {
+                  date = dayjs(item.day, NPM_DATE_FORMAT).startOf("day");
+                  break;
+                }
+                case "week": {
+                  date = dayjs(item.day, NPM_DATE_FORMAT).startOf("week");
+                  break;
+                }
+                case "month": {
+                  date = dayjs(item.day, NPM_DATE_FORMAT).startOf("month");
+                  break;
+                }
+              }
+
+              const timeStr = date.toISOString();
+
+              if (packagesDownloadsMap[packageName].has(timeStr)) {
+                const currentEntry =
+                  packagesDownloadsMap[packageName].get(timeStr)!;
+                packagesDownloadsMap[packageName].set(timeStr, {
+                  ...currentEntry,
+                  value: currentEntry.value + item.downloads,
+                });
+              } else {
+                packagesDownloadsMap[packageName].set(timeStr, {
+                  time: date,
+                  value: item.downloads,
+                });
+              }
+            }
+          } else {
+            let movingAverageRangeSize: number;
             switch (params.precision) {
               case "day": {
-                date = dayjs(item.day, NPM_DATE_FORMAT).startOf("day");
+                movingAverageRangeSize = 1;
                 break;
               }
               case "week": {
-                date = dayjs(item.day, NPM_DATE_FORMAT).startOf("week");
+                movingAverageRangeSize = 7;
                 break;
               }
               case "month": {
-                date = dayjs(item.day, NPM_DATE_FORMAT).startOf("month");
+                movingAverageRangeSize = 30;
                 break;
               }
             }
 
-            const timeStr = date.toISOString();
+            for (
+              let i = movingAverageRangeSize - 1;
+              i < npmPackageResponse.downloads.length;
+              i += 1
+            ) {
+              const item = npmPackageResponse.downloads[i];
+              const date = dayjs(item.day, NPM_DATE_FORMAT).startOf("day");
+              const rangeStartDate = date.subtract(
+                movingAverageRangeSize - 1,
+                "day"
+              );
 
-            if (packagesDownloadsMap[packageName].has(timeStr)) {
-              const currentEntry =
-                packagesDownloadsMap[packageName].get(timeStr)!;
-              packagesDownloadsMap[packageName].set(timeStr, {
-                ...currentEntry,
-                value: currentEntry.value + item.downloads,
-              });
-            } else {
+              let value = 0;
+              let currentDateIndex = i;
+              while (
+                currentDateIndex >= 0 &&
+                !dayjs(
+                  npmPackageResponse.downloads[currentDateIndex].day
+                ).isBefore(rangeStartDate)
+              ) {
+                const currentItem =
+                  npmPackageResponse.downloads[currentDateIndex];
+                value += Math.round(
+                  currentItem.downloads / movingAverageRangeSize
+                );
+                currentDateIndex -= 1;
+              }
+
+              const timeStr = date.toISOString();
               packagesDownloadsMap[packageName].set(timeStr, {
                 time: date,
-                value: item.downloads,
+                value,
               });
             }
           }
@@ -184,6 +239,7 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
     params.referencePackage,
     params.packages,
     params.precision,
+    params.precisionModel,
     params.base100,
   ]);
 };

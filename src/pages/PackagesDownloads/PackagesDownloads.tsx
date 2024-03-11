@@ -8,7 +8,7 @@ import { applyPreset } from "../../components/PresetPicker";
 import { Page } from "../../components/Page";
 import { Parameters } from "./Parameters";
 import queryString from "query-string";
-import { Precision } from "../../data";
+import { Precision, PrecisionModel } from "../../data";
 
 export const PackagesDownloads = () => {
   const [parameters, setParameters] =
@@ -18,6 +18,8 @@ export const PackagesDownloads = () => {
       return applyPreset(
         {
           precision: (queryParams.precision as Precision) ?? "week",
+          precisionModel:
+            (queryParams.precisionModel as PrecisionModel) ?? "sum",
           base100: queryParams.base100 === "true",
           dateRange: "last-year",
         },

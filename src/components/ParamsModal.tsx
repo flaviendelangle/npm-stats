@@ -6,6 +6,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { AutocompleteValue } from "@mui/base/AutocompleteUnstyled";
 import Stack from "@mui/material/Stack";
 import Dialog from "@mui/material/Dialog";
+import Button from "@mui/material/Button";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
@@ -17,8 +18,8 @@ import useEnhancedEffect from "@mui/utils/useEnhancedEffect";
 import { getPackageNameFromOption, PackageOption, PACKAGES } from "../data";
 import { DateRangePicker } from "./DateRangePicker";
 import { PrecisionPicker } from "./PrecisionPicker";
+import { PrecisionModelPicker } from "./PrecisionModelPicker";
 import { UsePackagesDownloadsParams } from "../hooks/usePackagesDownloads";
-import Button from "@mui/material/Button";
 
 export interface ParamsModalProps {
   value: UsePackagesDownloadsParams;
@@ -88,6 +89,7 @@ export const ParamsModal = (props: ParamsModalProps) => {
           <Stack spacing={4} sx={{ position: "relative", py: 1 }}>
             <DateRangePicker value={value} onChange={setValue} fullWidth />
             <PrecisionPicker value={value} onChange={setValue} fullWidth />
+            <PrecisionModelPicker value={value} onChange={setValue} fullWidth />
             <Autocomplete<PackageOption, true, false, true>
               freeSolo
               multiple
