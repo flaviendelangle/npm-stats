@@ -42,7 +42,7 @@ export const PackagesDownloads = () => {
 
   return (
     <Page actions={<Parameters value={parameters} onChange={setParameters} />}>
-      <DownloadCharts packages={packages} />
+      <DownloadCharts packages={packages} parameters={parameters} />
     </Page>
   );
 };
