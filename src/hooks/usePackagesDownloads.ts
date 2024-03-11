@@ -121,7 +121,7 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
                 break;
               }
               case "month": {
-                movingAverageRangeSize = 30;
+                movingAverageRangeSize = 28;
                 break;
               }
             }
