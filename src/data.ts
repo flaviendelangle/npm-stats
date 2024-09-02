@@ -13,11 +13,12 @@ export const PRESETS = [
   "MUI packages",
   "MUI X packages",
   "MUI free packages",
-  "MUI paying packages",
+  "MUI commercial packages",
+  "MUI pro packages",
+  "MUI premium packages",
   "Free data grids",
   "Paying data grids",
   "Free pickers",
-  "Paying pickers",
 ] as const;
 
 export type PackagePreset = (typeof PRESETS)[number];
@@ -52,11 +53,6 @@ export const PACKAGES: PackageOption[] = [
     packageNames: ["@mui/material", "@material-ui/core"],
   },
   {
-    name: "@mui/base",
-    category: "MUI Core",
-    presets: ["MUI packages", "MUI free packages"],
-  },
-  {
     name: "@mui/joy",
     category: "MUI Core",
     presets: ["MUI packages", "MUI free packages"],
@@ -66,6 +62,13 @@ export const PACKAGES: PackageOption[] = [
     category: "MUI Core",
     presets: ["MUI packages", "MUI free packages"],
     packageNames: ["@mui/lab", "@material-ui/lab"],
+  },
+
+  // Pigment CSS
+  {
+    name: "@pigment-css/react",
+    category: "MUI Core",
+    presets: ["MUI packages", "MUI free packages"],
   },
 
   // MUI XGrid
@@ -87,7 +90,8 @@ export const PACKAGES: PackageOption[] = [
       "MUI X packages",
       "Paying data grids",
       "MUI packages",
-      "MUI paying packages",
+      "MUI commercial packages",
+      "MUI pro packages",
     ],
     packageNames: ["@mui/x-data-grid-pro", "@material-ui/x-grid"],
   },
@@ -98,7 +102,25 @@ export const PACKAGES: PackageOption[] = [
       "MUI X packages",
       "Paying data grids",
       "MUI packages",
-      "MUI paying packages",
+      "MUI commercial packages",
+      "MUI premium packages",
+    ],
+  },
+
+  // MUI xCharts
+  {
+    name: "@mui/x-charts",
+    category: "MUI eXplore",
+    presets: ["MUI X packages", "MUI packages", "MUI free packages"],
+  },
+  {
+    name: "@mui/x-charts-pro",
+    category: "MUI eXplore",
+    presets: [
+      "MUI X packages",
+      "MUI packages",
+      "MUI commercial packages",
+      "MUI pro packages",
     ],
   },
 
@@ -118,27 +140,33 @@ export const PACKAGES: PackageOption[] = [
     category: "MUI eXplore",
     presets: [
       "MUI X packages",
-      "Paying pickers",
       "MUI packages",
-      "MUI paying packages",
+      "MUI commercial packages",
+      "MUI pro packages",
     ],
-  },
-  {
-    name: "@mui/x-charts",
-    category: "MUI eXplore",
-    presets: ["MUI X packages", "MUI packages", "MUI free packages"],
   },
   {
     name: "@mui/x-tree-view",
     category: "MUI eXplore",
     presets: ["MUI X packages", "MUI packages", "MUI free packages"],
   },
+  {
+    name: "@mui/x-tree-view-pro",
+    category: "MUI eXplore",
+    presets: [
+      "MUI X packages",
+      "MUI packages",
+      "MUI commercial packages",
+      "MUI pro packages",
+    ],
+  },
 
   // XGrid competitors
   {
-    name: "react-table",
+    name: "TanStack Table",
     category: "XGrid competitors",
     presets: ["Free data grids"],
+    packageNames: ["@tanstack/react-table", "react-table"],
   },
   {
     name: "material-table",
@@ -218,19 +246,9 @@ export const PACKAGES: PackageOption[] = [
     presets: ["Free pickers"],
   },
   {
-    name: "@syncfusion/ej2-calendars",
-    category: "eXplore competitors",
-    presets: ["Paying pickers"],
-  },
-  {
     name: "react-dates",
     category: "eXplore competitors",
     presets: ["Free pickers"],
-  },
-  {
-    name: "@progress/kendo-react-dateinputs",
-    category: "eXplore competitors",
-    presets: ["Paying pickers"],
   },
   {
     name: "@react-spectrum/datepicker",
