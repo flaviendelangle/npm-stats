@@ -10,10 +10,12 @@ export type DateRange =
   | "last-month";
 
 export const PRESETS = [
+  "Company packages",
+  "Company free packages",
+  "Company commercial packages",
   "MUI packages",
+  "Base UI packages",
   "MUI X packages",
-  "MUI free packages",
-  "MUI commercial packages",
   "MUI pro packages",
   "MUI premium packages",
   "Free data grids",
@@ -27,6 +29,7 @@ export type PackageCategory =
   | "MUI Core"
   | "MUI XGrid"
   | "MUI eXplore"
+  | "Base UI Core"
   | "XGrid competitors"
   | "eXplore competitors"
   | "Others";
@@ -49,26 +52,33 @@ export const PACKAGES: PackageOption[] = [
   {
     name: "@mui/material",
     category: "MUI Core",
-    presets: ["MUI packages", "MUI free packages"],
+    presets: ["Company packages", "MUI packages", "Company free packages"],
     packageNames: ["@mui/material", "@material-ui/core"],
   },
   {
     name: "@mui/joy",
     category: "MUI Core",
-    presets: ["MUI packages", "MUI free packages"],
+    presets: ["Company packages", "MUI packages", "Company free packages"],
   },
   {
     name: "@mui/lab",
     category: "MUI Core",
-    presets: ["MUI packages", "MUI free packages"],
-    packageNames: ["@mui/lab", "@material-ui/lab"],
+    presets: ["MUI packages", "Company free packages"],
+    packageNames: ["Company packages", "@mui/lab", "@material-ui/lab"],
+  },
+
+  // Base UI
+  {
+    name: "@base-ui-components/react",
+    category: "Base UI Core",
+    presets: ["Company packages", "Base UI packages"],
   },
 
   // Pigment CSS
   {
     name: "@pigment-css/react",
     category: "MUI Core",
-    presets: ["MUI packages", "MUI free packages"],
+    presets: ["Company packages", "MUI packages", "Company free packages"],
   },
 
   // MUI XGrid
@@ -76,10 +86,11 @@ export const PACKAGES: PackageOption[] = [
     name: "@mui/x-data-grid",
     category: "MUI XGrid",
     presets: [
+      "Company packages",
       "MUI X packages",
       "Free data grids",
       "MUI packages",
-      "MUI free packages",
+      "Company free packages",
     ],
     packageNames: ["@mui/x-data-grid", "@material-ui/data-grid"],
   },
@@ -87,10 +98,11 @@ export const PACKAGES: PackageOption[] = [
     name: "@mui/x-data-grid-pro",
     category: "MUI XGrid",
     presets: [
+      "Company packages",
       "MUI X packages",
       "Paying data grids",
       "MUI packages",
-      "MUI commercial packages",
+      "Company commercial packages",
       "MUI pro packages",
     ],
     packageNames: ["@mui/x-data-grid-pro", "@material-ui/x-grid"],
@@ -99,10 +111,11 @@ export const PACKAGES: PackageOption[] = [
     name: "@mui/x-data-grid-premium",
     category: "MUI XGrid",
     presets: [
+      "Company packages",
       "MUI X packages",
       "Paying data grids",
       "MUI packages",
-      "MUI commercial packages",
+      "Company commercial packages",
       "MUI premium packages",
     ],
   },
@@ -111,15 +124,21 @@ export const PACKAGES: PackageOption[] = [
   {
     name: "@mui/x-charts",
     category: "MUI eXplore",
-    presets: ["MUI X packages", "MUI packages", "MUI free packages"],
+    presets: [
+      "Company packages",
+      "MUI X packages",
+      "MUI packages",
+      "Company free packages",
+    ],
   },
   {
     name: "@mui/x-charts-pro",
     category: "MUI eXplore",
     presets: [
+      "Company packages",
       "MUI X packages",
       "MUI packages",
-      "MUI commercial packages",
+      "Company commercial packages",
       "MUI pro packages",
     ],
   },
@@ -129,34 +148,42 @@ export const PACKAGES: PackageOption[] = [
     name: "@mui/x-date-pickers",
     category: "MUI eXplore",
     presets: [
+      "Company packages",
       "MUI X packages",
       "Free pickers",
       "MUI packages",
-      "MUI free packages",
+      "Company free packages",
     ],
   },
   {
     name: "@mui/x-date-pickers-pro",
     category: "MUI eXplore",
     presets: [
+      "Company packages",
       "MUI X packages",
       "MUI packages",
-      "MUI commercial packages",
+      "Company commercial packages",
       "MUI pro packages",
     ],
   },
   {
     name: "@mui/x-tree-view",
     category: "MUI eXplore",
-    presets: ["MUI X packages", "MUI packages", "MUI free packages"],
+    presets: [
+      "Company packages",
+      "MUI X packages",
+      "MUI packages",
+      "Company free packages",
+    ],
   },
   {
     name: "@mui/x-tree-view-pro",
     category: "MUI eXplore",
     presets: [
+      "Company packages",
       "MUI X packages",
       "MUI packages",
-      "MUI commercial packages",
+      "Company commercial packages",
       "MUI pro packages",
     ],
   },

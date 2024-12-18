@@ -10,24 +10,24 @@
     "prettier": "prettier --write ./src"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
-    "@mui/icons-material": "^5.10.6",
-    "@mui/material": "^5.10.7",
-    "@mui/utils": "^5.10.7",
-    "@mui/x-charts": "^7.0.0-beta.6",
-    "dayjs": "^1.11.5",
-    "query-string": "^8.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0",
+    "@mui/icons-material": "6.2.1",
+    "@mui/material": "6.2.1",
+    "@mui/utils": "6.2.1",
+    "@mui/x-charts": "7.23.2",
+    "dayjs": "1.11.13",
+    "query-string": "9.1.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-scripts": "5.0.1",
-    "typescript": "^4.8.3"
+    "typescript": "5.7.2"
   },
   "devDependencies": {
-    "@types/node": "^16.11.59",
-    "@types/react": "^18.0.20",
-    "@types/react-dom": "^18.0.6",
-    "prettier": "^2.7.1"
+    "@types/node": "22.10.2",
+    "@types/react": "19.0.1",
+    "@types/react-dom": "19.0.2",
+    "prettier": "3.4.2"
   },
   "eslintConfig": {
     "extends": [
