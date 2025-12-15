@@ -69,9 +69,10 @@ export const PACKAGES: PackageOption[] = [
 
   // Base UI
   {
-    name: "@base-ui-components/react",
+    name: "@base-ui/react",
     category: "Base UI Core",
     presets: ["Company packages", "Base UI packages"],
+    packageNames: ["@base-ui/react", "@base-ui-components/react"],
   },
 
   // Pigment CSS
