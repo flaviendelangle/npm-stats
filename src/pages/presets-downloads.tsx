@@ -27,7 +27,7 @@ export function PresetsDownloadsPage() {
   const { dateRange, precision, precisionModel } = useFilterParams();
   const presetSelectId = useId();
 
-  const selectedPreset = (searchParams.get('preset') as PackagePreset) || PRESETS[0];
+  const selectedPreset = (searchParams.get('preset') as PackagePreset) || 'Base UI packages';
 
   const setSelectedPreset = (value: PackagePreset | null) => {
     if (value) {
