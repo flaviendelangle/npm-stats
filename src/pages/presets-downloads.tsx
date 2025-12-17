@@ -8,7 +8,9 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -66,10 +68,15 @@ export function PresetsDownloadsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {PRESETS.map((preset) => (
-                <SelectItem key={preset} value={preset}>
-                  {preset}
-                </SelectItem>
+              {PRESETS.map((presetGroup) => (
+                <SelectGroup key={presetGroup.group}>
+                  <SelectLabel>{presetGroup.group}</SelectLabel>
+                  {presetGroup.presets.map((preset) => (
+                    <SelectItem key={preset} value={preset}>
+                      {preset}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               ))}
             </SelectContent>
           </Select>

@@ -1,23 +1,34 @@
 export const PRESETS = [
-  'Company packages',
-  'Company free packages',
-  'Company commercial packages',
-  'MUI packages',
-  'Base UI packages',
-  'MUI X packages',
-  'MUI pro packages',
-  'MUI premium packages',
-  'Free data grids',
-  'Paying data grids',
-  'Free pickers',
-  'Headless libraries',
-  'Free Charts libraries',
-  'Paying Charts libraries',
-  'Date libraries',
-  'React',
+  {
+    group: 'Base UI products',
+    presets: ['Base UI packages'],
+  },
+  {
+    group: 'Material UI products',
+    presets: ['MUI packages', 'MUI X packages', 'MUI pro packages', 'MUI premium packages'],
+  },
+  {
+    group: 'MUI Company',
+    presets: ['Company packages', 'Company free packages', 'Company commercial packages'],
+  },
+  {
+    group: 'Competitors',
+    presets: [
+      'Free data grids',
+      'Paying data grids',
+      'Free pickers',
+      'Headless libraries',
+      'Free Charts libraries',
+      'Paying Charts libraries',
+    ],
+  },
+  {
+    group: 'Others',
+    presets: ['Date libraries', 'React'],
+  },
 ] as const;
 
-export type PackagePreset = (typeof PRESETS)[number];
+export type PackagePreset = (typeof PRESETS)[number]['presets'][number];
 
 export interface PackageOption {
   name: string;

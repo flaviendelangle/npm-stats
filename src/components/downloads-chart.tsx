@@ -5,7 +5,9 @@ import type { TooltipProps } from 'recharts';
 import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 import type { PackageDownloads } from '@/hooks/usePackagesDownloads';
+import { cn } from '@/lib/utils';
 
+import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { type ChartConfig, ChartContainer, ChartTooltip } from './ui/chart';
 
@@ -132,6 +134,7 @@ export function DownloadsLineChart({
   data,
   isLoading,
 }: DownloadsLineChartProps) {
+  const [logScale, setLogScale] = React.useState(false);
   // Transform data for Recharts - merge all packages into a single array with time as key
   const chartData = React.useMemo(() => {
     if (data.length === 0) return [];
@@ -184,9 +187,19 @@ export function DownloadsLineChart({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="flex flex-row items-start justify-between space-y-0">
+        <div>
+          <CardTitle>{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setLogScale(!logScale)}
+          className={cn('text-xs', logScale && 'bg-accent')}
+        >
+          Log scale
+        </Button>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -200,6 +213,8 @@ export function DownloadsLineChart({
               tickFormatter={(value: Date) => format(value, 'MMM yyyy')}
             />
             <YAxis
+              scale={logScale ? 'log' : 'auto'}
+              domain={logScale ? ['auto', 'auto'] : undefined}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -241,6 +256,7 @@ export function DownloadsStackedAreaChart({
   data,
   isLoading,
 }: DownloadsStackedAreaChartProps) {
+  const [logScale, setLogScale] = React.useState(false);
   // Transform data for Recharts - merge all packages into a single array with time as key
   const chartData = React.useMemo(() => {
     if (data.length === 0) return [];
@@ -293,9 +309,19 @@ export function DownloadsStackedAreaChart({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="flex flex-row items-start justify-between space-y-0">
+        <div>
+          <CardTitle>{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setLogScale(!logScale)}
+          className={cn('text-xs', logScale && 'bg-accent')}
+        >
+          Log scale
+        </Button>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -309,6 +335,8 @@ export function DownloadsStackedAreaChart({
               tickFormatter={(value: Date) => format(value, 'MMM yyyy')}
             />
             <YAxis
+              scale={logScale ? 'log' : 'auto'}
+              domain={logScale ? ['auto', 'auto'] : undefined}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
