@@ -34,6 +34,17 @@ export function Layout() {
                 </Button>
               )}
             </NavLink>
+            <NavLink to="/custom-packages">
+              {({ isActive }) => (
+                <Button
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className={cn(!isActive && 'text-muted-foreground')}
+                >
+                  Custom Packages
+                </Button>
+              )}
+            </NavLink>
           </nav>
           <div className="ml-auto">
             <ThemeToggle />

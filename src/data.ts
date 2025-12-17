@@ -10,6 +10,10 @@ export const PRESETS = [
   'Free data grids',
   'Paying data grids',
   'Free pickers',
+  'Headless libraries',
+  'Free Charts libraries',
+  'Paying Charts libraries',
+  'Date libraries',
   'React',
 ] as const;
 
@@ -47,7 +51,7 @@ export const PACKAGES: PackageOption[] = [
   // Base UI
   {
     name: '@base-ui/react',
-    presets: ['Company packages', 'Base UI packages'],
+    presets: ['Company packages', 'Base UI packages', 'Headless libraries'],
     packageNames: ['@base-ui/react', '@base-ui-components/react'],
   },
   {
@@ -101,7 +105,13 @@ export const PACKAGES: PackageOption[] = [
   // MUI xCharts
   {
     name: '@mui/x-charts',
-    presets: ['Company packages', 'MUI X packages', 'MUI packages', 'Company free packages'],
+    presets: [
+      'Company packages',
+      'MUI X packages',
+      'MUI packages',
+      'Company free packages',
+      'Free Charts libraries',
+    ],
   },
   {
     name: '@mui/x-charts-pro',
@@ -111,6 +121,7 @@ export const PACKAGES: PackageOption[] = [
       'MUI packages',
       'Company commercial packages',
       'MUI pro packages',
+      'Paying Charts libraries',
     ],
   },
   {
@@ -121,6 +132,7 @@ export const PACKAGES: PackageOption[] = [
       'MUI packages',
       'Company commercial packages',
       'MUI premium packages',
+      'Paying Charts libraries',
     ],
   },
 
@@ -244,6 +256,28 @@ export const PACKAGES: PackageOption[] = [
     name: 'react-datepicker',
     presets: ['Free pickers'],
   },
+
+  // Base UI competitors
+  { name: '@radix-ui/primitive', presets: ['Headless libraries'] },
+  { name: '@headlessui/react', presets: ['Headless libraries'] },
+  { name: 'react-aria-components', presets: ['Headless libraries'] },
+  { name: '@ark-ui/react', presets: ['Headless libraries'] },
+
+  // xCharts competitors
+  { name: 'recharts', presets: ['Free Charts libraries'] },
+  { name: 'charts.js', presets: ['Free Charts libraries'] },
+  { name: 'highcharts', presets: ['Free Charts libraries'] },
+  { name: 'echarts', presets: ['Free Charts libraries'] },
+  { name: 'apexcharts', presets: ['Free Charts libraries'] },
+  { name: '@nivo/core', presets: ['Free Charts libraries'] },
+  { name: 'ag-charts-community', presets: ['Free Charts libraries'] },
+  { name: 'ag-charts-enterprise', presets: ['Paying Charts libraries'] },
+
+  // Date libraries
+  { name: 'date-fns', presets: ['Date libraries'] },
+  { name: 'moment', presets: ['Date libraries'] },
+  { name: 'dayjs', presets: ['Date libraries'] },
+  { name: 'luxon', presets: ['Date libraries'] },
 
   // Others
   { name: 'react-dom', presets: ['React'] },
