@@ -1,28 +1,18 @@
-import React from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import GlobalStyles from "@mui/material/GlobalStyles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { theme } from "./theme";
-import { PackagesDownloads } from "./pages/PackagesDownloads";
-import { NPMContext } from "./components/NPMContext";
+import { Route, Routes } from 'react-router-dom';
 
-const customCssBaseline = (
-  <GlobalStyles
-    styles={{
-      body: { width: "100vw", height: "100vh" },
-      "& #root": { width: "100vw", height: "100vh" },
-    }}
-  />
-);
+import { Layout } from '@/components/layout';
+import { PackageBreakdownPage } from '@/pages/package-breakdown';
+import { PresetsDownloadsPage } from '@/pages/presets-downloads';
 
-export const App = () => {
+export function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {customCssBaseline}
-      <NPMContext>
-        <PackagesDownloads />
-      </NPMContext>
-    </ThemeProvider>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<PresetsDownloadsPage />} />
+        <Route path="/package-breakdown" element={<PackageBreakdownPage />} />
+      </Route>
+    </Routes>
   );
-};
+}
+
+export default App;

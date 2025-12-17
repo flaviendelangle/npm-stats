@@ -1,18 +1,22 @@
-import * as React from "react";
-import dayjs, { Dayjs } from "dayjs";
-import {
-  Precision,
-  PackageOption,
-  getPackageNameFromOption,
-  DateRange,
-  PrecisionModel,
-} from "../data";
-import { useNpmApi, NPM_DATE_FORMAT } from "../components/NPMContext";
+import * as React from 'react';
+
+import { isBefore } from 'date-fns/isBefore';
+import { parse } from 'date-fns/parse';
+import { startOfDay } from 'date-fns/startOfDay';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { subDays } from 'date-fns/subDays';
+
+import { NPM_DATE_FORMAT } from '@/constants';
+import { type PackageOption, getPackageNameFromOption } from '@/data';
+import type { DateRange, Precision, PrecisionModel } from '@/types';
+
+import { useNpmPackageDownloads } from './useNpmPackageDownloads';
 
 export interface UsePackagesDownloadsParams {
   dateRange: DateRange;
-  packages: (string | PackageOption)[];
-  referencePackage: string | PackageOption | null;
+  packages: PackageOption[];
+  referencePackage: PackageOption | null;
   precision: Precision;
   precisionModel: PrecisionModel;
   base100: boolean;
@@ -20,45 +24,37 @@ export interface UsePackagesDownloadsParams {
 
 export type PackageDownloads = {
   packageName: string;
-  data: { time: Dayjs; value: number }[];
+  data: { time: Date; value: number }[];
 };
 
 export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
-  const npmApi = useNpmApi();
+  const allPackages = React.useMemo(
+    () =>
+      params.referencePackage == null
+        ? params.packages
+        : [...params.packages, params.referencePackage],
+    [params.packages, params.referencePackage],
+  );
 
-  React.useEffect(() => {
-    const fetcher = npmApi.fetchPackagesDownloads;
+  const { isLoading, packages: packagesData } = useNpmPackageDownloads({
+    dateRange: params.dateRange,
+    packages: allPackages,
+  });
 
-    fetcher({
-      dateRange: params.dateRange,
-      packages:
-        params.referencePackage == null
-          ? params.packages
-          : [...params.packages, params.referencePackage],
-    });
-  }, [
-    params.packages,
-    params.referencePackage,
-    params.dateRange,
-    npmApi.fetchPackagesDownloads,
-  ]);
-
-  return React.useMemo<PackageDownloads[]>(() => {
-    if (npmApi.isLoading || !npmApi.packages) {
+  const data = React.useMemo<PackageDownloads[]>(() => {
+    if (isLoading || !packagesData) {
       return [];
     }
 
     const packagesDownloadsMap: {
-      [name: string]: Map<string, { time: Dayjs; value: number }>;
+      [name: string]: Map<string, { time: Date; value: number }>;
     } = {};
 
-    const buildPackageMap = (pkg: string | PackageOption) => {
+    const buildPackageMap = (pkg: PackageOption) => {
       const packageName = getPackageNameFromOption(pkg);
 
       let npmPackages: string[];
-      if (typeof pkg === "string") {
-        npmPackages = [pkg];
-      } else if (pkg.packageNames == null) {
+      if (pkg.packageNames == null) {
         npmPackages = [pkg.name];
       } else {
         npmPackages = pkg.packageNames;
@@ -69,26 +65,26 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
       }
 
       for (const npmPackage of npmPackages) {
-        const npmPackageResponse = npmApi.packages[npmPackage];
+        const npmPackageResponse = packagesData[npmPackage];
         if (npmPackageResponse?.downloads) {
           if (!packagesDownloadsMap[packageName]) {
             packagesDownloadsMap[packageName] = new Map();
           }
 
-          if (params.precisionModel === "sum") {
-            for (let item of npmPackageResponse.downloads) {
-              let date: Dayjs;
+          if (params.precisionModel === 'sum') {
+            for (const item of npmPackageResponse.downloads) {
+              let date: Date;
               switch (params.precision) {
-                case "day": {
-                  date = dayjs(item.day, NPM_DATE_FORMAT).startOf("day");
+                case 'day': {
+                  date = startOfDay(parse(item.day, NPM_DATE_FORMAT, new Date()));
                   break;
                 }
-                case "week": {
-                  date = dayjs(item.day, NPM_DATE_FORMAT).startOf("week");
+                case 'week': {
+                  date = startOfWeek(parse(item.day, NPM_DATE_FORMAT, new Date()));
                   break;
                 }
-                case "month": {
-                  date = dayjs(item.day, NPM_DATE_FORMAT).startOf("month");
+                case 'month': {
+                  date = startOfMonth(parse(item.day, NPM_DATE_FORMAT, new Date()));
                   break;
                 }
               }
@@ -96,8 +92,7 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
               const timeStr = date.toISOString();
 
               if (packagesDownloadsMap[packageName].has(timeStr)) {
-                const currentEntry =
-                  packagesDownloadsMap[packageName].get(timeStr)!;
+                const currentEntry = packagesDownloadsMap[packageName].get(timeStr)!;
                 packagesDownloadsMap[packageName].set(timeStr, {
                   ...currentEntry,
                   value: currentEntry.value + item.downloads,
@@ -112,15 +107,15 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
           } else {
             let movingAverageRangeSize: number;
             switch (params.precision) {
-              case "day": {
+              case 'day': {
                 movingAverageRangeSize = 1;
                 break;
               }
-              case "week": {
+              case 'week': {
                 movingAverageRangeSize = 7;
                 break;
               }
-              case "month": {
+              case 'month': {
                 movingAverageRangeSize = 28;
                 break;
               }
@@ -132,32 +127,30 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
               i += 1
             ) {
               const item = npmPackageResponse.downloads[i];
-              const date = dayjs(item.day, NPM_DATE_FORMAT).startOf("day");
-              const rangeStartDate = date.subtract(
-                movingAverageRangeSize - 1,
-                "day"
-              );
+              const date = startOfDay(parse(item.day, NPM_DATE_FORMAT, new Date()));
+              const rangeStartDate = subDays(date, movingAverageRangeSize - 1);
 
               let value = 0;
               let currentDateIndex = i;
               while (
                 currentDateIndex >= 0 &&
-                !dayjs(
-                  npmPackageResponse.downloads[currentDateIndex].day
-                ).isBefore(rangeStartDate)
+                !isBefore(
+                  parse(
+                    npmPackageResponse.downloads[currentDateIndex].day,
+                    NPM_DATE_FORMAT,
+                    new Date(),
+                  ),
+                  rangeStartDate,
+                )
               ) {
-                const currentItem =
-                  npmPackageResponse.downloads[currentDateIndex];
-                value += Math.round(
-                  currentItem.downloads / movingAverageRangeSize
-                );
+                const currentItem = npmPackageResponse.downloads[currentDateIndex];
+                value += Math.round(currentItem.downloads / movingAverageRangeSize);
                 currentDateIndex -= 1;
               }
 
               const timeStr = date.toISOString();
               if (packagesDownloadsMap[packageName].has(timeStr)) {
-                const currentEntry =
-                  packagesDownloadsMap[packageName].get(timeStr)!;
+                const currentEntry = packagesDownloadsMap[packageName].get(timeStr)!;
                 packagesDownloadsMap[packageName].set(timeStr, {
                   ...currentEntry,
                   value: currentEntry.value + value,
@@ -195,40 +188,33 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
           return null;
         }
 
-        const data = Array.from(downloadsMap.entries()).map(
-          ([dateStr, item]) => {
-            const referenceItem = referenceDownloadsMap?.get(dateStr);
-            if (!referenceItem || referenceItem.value === 0) {
-              return item;
-            }
-
-            const relativeValue = item.value / referenceItem.value;
-
-            return {
-              ...item,
-              value: Math.floor(relativeValue * 100000) / 1000,
-            };
+        const data = Array.from(downloadsMap.entries()).map(([dateStr, item]) => {
+          const referenceItem = referenceDownloadsMap?.get(dateStr);
+          if (!referenceItem || referenceItem.value === 0) {
+            return item;
           }
-        );
+
+          const relativeValue = item.value / referenceItem.value;
+
+          return {
+            ...item,
+            value: Math.floor(relativeValue * 100000) / 1000,
+          };
+        });
 
         return {
           packageName,
           data,
         };
       })
-      .filter(
-        (packageDownloads): packageDownloads is PackageDownloads =>
-          !!packageDownloads
-      );
+      .filter((packageDownloads): packageDownloads is PackageDownloads => !!packageDownloads);
 
     if (!params.base100) {
       return packagesDownloads;
     }
 
     return packagesDownloads.map((packageDownloads) => {
-      const firstValue = packageDownloads.data.find(
-        (item) => item.value > 0
-      )?.value;
+      const firstValue = packageDownloads.data.find((item) => item.value > 0)?.value;
 
       if (firstValue == null) {
         return packageDownloads;
@@ -243,12 +229,14 @@ export const usePackagesDownloads = (params: UsePackagesDownloadsParams) => {
       };
     });
   }, [
-    npmApi.packages,
-    npmApi.isLoading,
+    packagesData,
+    isLoading,
     params.referencePackage,
     params.packages,
     params.precision,
     params.precisionModel,
     params.base100,
   ]);
+
+  return { data, isLoading };
 };

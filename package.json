@@ -1,50 +1,48 @@
 {
-  "name": "npm-stats",
-  "version": "0.1.0",
+  "name": "npms-stats",
+  "version": "0.2.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "prettier": "prettier --write ./src"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "prettier": "prettier --write ./src",
+    "typescript": "tsc --noEmit"
   },
   "dependencies": {
-    "@emotion/react": "11.14.0",
-    "@emotion/styled": "11.14.0",
-    "@mui/icons-material": "6.2.1",
-    "@mui/material": "6.2.1",
-    "@mui/utils": "6.2.1",
-    "@mui/x-charts": "7.23.2",
-    "dayjs": "1.11.13",
-    "query-string": "9.1.1",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-scripts": "5.0.1",
-    "typescript": "5.7.2"
+    "@base-ui/react": "^1.0.0",
+    "@fontsource-variable/noto-sans": "^5.2.10",
+    "@tailwindcss/vite": "^4.1.17",
+    "@tanstack/react-query": "^5.90.12",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.561.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.10.1",
+    "recharts": "^2.15.4",
+    "shadcn": "^3.6.1",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^4.1.17",
+    "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
-    "@types/node": "22.10.2",
-    "@types/react": "19.0.1",
-    "@types/react-dom": "19.0.2",
-    "prettier": "3.4.2"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "@eslint/js": "^9.39.1",
+    "@trivago/prettier-plugin-sort-imports": "6.0.0",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.4",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4"
   }
 }
