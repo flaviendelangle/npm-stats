@@ -272,6 +272,7 @@ export const PACKAGES: PackageOption[] = [
   { name: '@radix-ui/primitive', presets: ['Headless libraries'] },
   { name: '@headlessui/react', presets: ['Headless libraries'] },
   { name: 'react-aria-components', presets: ['Headless libraries'] },
+  { name: '@ariakit/react', presets: ['Headless libraries'] },
   { name: '@ark-ui/react', presets: ['Headless libraries'] },
 
   // xCharts competitors
