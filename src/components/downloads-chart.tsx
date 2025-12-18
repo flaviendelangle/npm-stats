@@ -5,9 +5,7 @@ import type { TooltipProps } from 'recharts';
 import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 import type { PackageDownloads } from '@/hooks/usePackagesDownloads';
-import { cn } from '@/lib/utils';
 
-import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { type ChartConfig, ChartContainer, ChartTooltip } from './ui/chart';
 
@@ -126,6 +124,7 @@ interface DownloadsLineChartProps {
   description?: string;
   data: PackageDownloads[];
   isLoading?: boolean;
+  logScale: boolean;
 }
 
 export function DownloadsLineChart({
@@ -133,8 +132,8 @@ export function DownloadsLineChart({
   description,
   data,
   isLoading,
+  logScale,
 }: DownloadsLineChartProps) {
-  const [logScale, setLogScale] = React.useState(false);
   // Transform data for Recharts - merge all packages into a single array with time as key
   const chartData = React.useMemo(() => {
     if (data.length === 0) return [];
@@ -192,14 +191,7 @@ export function DownloadsLineChart({
           <CardTitle>{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setLogScale(!logScale)}
-          className={cn('text-xs', logScale && 'bg-accent')}
-        >
-          Log scale
-        </Button>
+        {/* Log scale toggle button should be rendered by the parent page */}
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -213,7 +205,8 @@ export function DownloadsLineChart({
               tickFormatter={(value: Date) => format(value, 'MMM yyyy')}
             />
             <YAxis
-              scale={logScale ? 'log' : 'auto'}
+              // @ts-expect-error Recharts type definitions do not include 'symlog' scale
+              scale={logScale ? 'symlog' : 'auto'}
               domain={logScale ? ['auto', 'auto'] : undefined}
               tickLine={false}
               axisLine={false}
@@ -248,6 +241,7 @@ interface DownloadsStackedAreaChartProps {
   description?: string;
   data: PackageDownloads[];
   isLoading?: boolean;
+  logScale: boolean;
 }
 
 export function DownloadsStackedAreaChart({
@@ -255,8 +249,8 @@ export function DownloadsStackedAreaChart({
   description,
   data,
   isLoading,
+  logScale,
 }: DownloadsStackedAreaChartProps) {
-  const [logScale, setLogScale] = React.useState(false);
   // Transform data for Recharts - merge all packages into a single array with time as key
   const chartData = React.useMemo(() => {
     if (data.length === 0) return [];
@@ -314,14 +308,7 @@ export function DownloadsStackedAreaChart({
           <CardTitle>{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setLogScale(!logScale)}
-          className={cn('text-xs', logScale && 'bg-accent')}
-        >
-          Log scale
-        </Button>
+        {/* Log scale toggle button should be rendered by the parent page */}
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>

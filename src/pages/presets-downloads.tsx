@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { DownloadsLineChart } from '@/components/downloads-chart';
 import { FilterControls } from '@/components/filters';
+import { LogScaleToggle, useLogScale } from '@/components/log-scale-toggle';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -49,15 +50,15 @@ export function PresetsDownloadsPage() {
     base100: false,
   });
 
+  const { logScale } = useLogScale();
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Preset Downloads</h2>
-          <p className="text-muted-foreground">
-            Compare NPM download statistics for packages in a preset
-          </p>
-        </div>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Preset Downloads</h2>
+        <p className="text-muted-foreground">
+          Compare NPM download statistics for packages in a preset
+        </p>
       </div>
 
       <div className="flex flex-wrap items-end gap-4">
@@ -82,6 +83,9 @@ export function PresetsDownloadsPage() {
           </Select>
         </div>
         <FilterControls />
+        <div className="ml-auto">
+          <LogScaleToggle />
+        </div>
       </div>
 
       <DownloadsLineChart
@@ -89,6 +93,7 @@ export function PresetsDownloadsPage() {
         description={`Daily downloads for ${packages.length} packages`}
         data={downloadsData}
         isLoading={isLoading}
+        logScale={logScale}
       />
     </div>
   );

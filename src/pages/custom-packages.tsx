@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Autocomplete } from '@/components/autocomplete';
 import { DownloadsLineChart } from '@/components/downloads-chart';
 import { FilterControls } from '@/components/filters';
+import { LogScaleToggle, useLogScale } from '@/components/log-scale-toggle';
 import { Label } from '@/components/ui/label';
 import { PACKAGES, type PackageOption } from '@/data';
 import { useFilterParams } from '@/hooks/useFilterParams';
@@ -55,15 +56,15 @@ export function CustomPackagesPage() {
     base100: false,
   });
 
+  const { logScale } = useLogScale();
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Custom Packages</h2>
-          <p className="text-muted-foreground">
-            Select any packages to compare their NPM download statistics
-          </p>
-        </div>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Custom Packages</h2>
+        <p className="text-muted-foreground">
+          Select any packages to compare their NPM download statistics
+        </p>
       </div>
 
       <div className="flex flex-wrap items-end gap-4">
@@ -82,6 +83,9 @@ export function CustomPackagesPage() {
           />
         </div>
         <FilterControls />
+        <div className="ml-auto">
+          <LogScaleToggle />
+        </div>
       </div>
 
       {selectedPackages.length === 0 ? (
@@ -94,6 +98,7 @@ export function CustomPackagesPage() {
           description={`Daily downloads for ${selectedPackages.length} package${selectedPackages.length === 1 ? '' : 's'}`}
           data={downloadsData}
           isLoading={isLoading}
+          logScale={logScale}
         />
       )}
     </div>

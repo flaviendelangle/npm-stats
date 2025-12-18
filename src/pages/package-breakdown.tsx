@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { DownloadsStackedAreaChart } from '@/components/downloads-chart';
 import { FilterControls } from '@/components/filters';
+import { LogScaleToggle, useLogScale } from '@/components/log-scale-toggle';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -55,15 +56,15 @@ export function PackageBreakdownPage() {
     base100: false,
   });
 
+  const { logScale } = useLogScale();
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Package Breakdown</h2>
-          <p className="text-muted-foreground">
-            View stacked downloads for packages with multiple npm names (e.g., renamed packages)
-          </p>
-        </div>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Package Breakdown</h2>
+        <p className="text-muted-foreground">
+          View stacked downloads for packages with multiple npm names (e.g., renamed packages)
+        </p>
       </div>
 
       <div className="flex flex-wrap items-end gap-4">
@@ -83,6 +84,9 @@ export function PackageBreakdownPage() {
           </Select>
         </div>
         <FilterControls />
+        <div className="ml-auto">
+          <LogScaleToggle />
+        </div>
       </div>
 
       <DownloadsStackedAreaChart
@@ -94,6 +98,7 @@ export function PackageBreakdownPage() {
         }
         data={downloadsData}
         isLoading={isLoading}
+        logScale={logScale}
       />
     </div>
   );
