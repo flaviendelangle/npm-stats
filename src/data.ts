@@ -183,6 +183,32 @@ export const PACKAGES: PackageOption[] = [
     ],
   },
 
+  // MUI Scheduler
+  {
+    name: '@mui/x-scheduler',
+    presets: ['Company packages', 'MUI X packages', 'MUI packages', 'Company free packages'],
+  },
+  {
+    name: '@mui/x-scheduler-premium',
+    presets: [
+      'Company packages',
+      'MUI X packages',
+      'MUI packages',
+      'Company commercial packages',
+      'MUI premium packages',
+    ],
+  },
+
+  // MUI Chat
+  {
+    name: '@mui/x-chat',
+    presets: ['Company packages', 'MUI X packages', 'MUI packages', 'Company free packages'],
+  },
+  {
+    name: '@mui/x-chat-headless',
+    presets: ['Company packages', 'MUI X packages', 'MUI packages', 'Company free packages'],
+  },
+
   // XGrid competitors
   {
     name: 'TanStack Table',
