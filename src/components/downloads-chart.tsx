@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { format } from 'date-fns';
-import type { TooltipProps } from 'recharts';
+import type { TooltipContentProps } from 'recharts';
 import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 import type { PackageDownloads } from '@/hooks/usePackagesDownloads';
@@ -50,7 +50,9 @@ function ChartLegendGrid({ config }: ChartLegendGridProps) {
   );
 }
 
-interface CustomTooltipProps extends TooltipProps<number, string> {
+interface CustomTooltipProps extends Partial<
+  Pick<TooltipContentProps<number, string>, 'active' | 'payload'>
+> {
   config: ChartConfig;
 }
 
@@ -60,7 +62,7 @@ function CustomTooltip({ active, payload, config }: CustomTooltipProps) {
   const time = payload[0]?.payload?.time as Date | undefined;
 
   // Sort payload by value descending for better readability
-  const sortedPayload = [...payload].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+  const sortedPayload = [...payload].sort((a, b) => Number(b.value ?? 0) - Number(a.value ?? 0));
 
   return (
     <div className="rounded-lg border border-border bg-background/95 p-3 shadow-lg backdrop-blur-sm">
@@ -71,17 +73,18 @@ function CustomTooltip({ active, payload, config }: CustomTooltipProps) {
       )}
       <div className="space-y-1.5">
         {sortedPayload.map((entry) => {
-          const packageConfig = config[entry.dataKey as string];
-          const value = entry.value ?? 0;
+          const packageName = String(entry.dataKey);
+          const packageConfig = config[packageName];
+          const value = Number(entry.value ?? 0);
           return (
-            <div key={entry.dataKey} className="flex items-center justify-between gap-8">
+            <div key={packageName} className="flex items-center justify-between gap-8">
               <div className="flex items-center gap-2">
                 <div
                   className="h-2.5 w-2.5 shrink-0 rounded-sm"
                   style={{ backgroundColor: packageConfig?.color || entry.color }}
                 />
                 <span className="text-sm text-muted-foreground">
-                  {packageConfig?.label || entry.dataKey}
+                  {packageConfig?.label || packageName}
                 </span>
               </div>
               <span className="text-sm font-medium tabular-nums text-foreground">
@@ -205,7 +208,6 @@ export function DownloadsLineChart({
               tickFormatter={(value: Date) => format(value, 'MMM yyyy')}
             />
             <YAxis
-              // @ts-expect-error Recharts type definitions do not include 'symlog' scale
               scale={logScale ? 'symlog' : 'auto'}
               domain={logScale ? ['auto', 'auto'] : undefined}
               tickLine={false}
